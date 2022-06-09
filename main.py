@@ -59,7 +59,7 @@ def backup():                                           #回档
                 os._exit(0)
     datanamestwo = os.listdir(listDirtwo)
     for datanametwo in datanamestwo:
-        if os.path.splitext(datanametwo)[1] == '.xlsx':                         #目录下包含.xlsx的文件
+        if os.path.splitext(datanametwo)[1] == '.xls':                         #目录下包含.xls的文件
             datanamesfinally.append(datanametwo)
             docxcount = docxcount + 1 
     if docxcount >=2:  
@@ -82,7 +82,7 @@ def backup():                                           #回档
         imagename = "error"
         successGUI()
         
-def day_check(weekdayDisplay ,nowhour):                 #检测今天日期，防误删
+'''def day_check(weekdayDisplay ,nowhour):                 #检测今天日期，防误删
 
     if not nowhour=="16":
             choice1=g.indexbox("今天是"+weekdayDisplay+",现在还不到使用时间(16:00-17:00)",title="HoMo答疑人口管理系统1.0:防误触",choices=("好的,退出","不好,退出"))
@@ -95,7 +95,7 @@ def day_check(weekdayDisplay ,nowhour):                 #检测今天日期，�
             if choice1==None:
                 os._exit(0)
 
-Checkdate = day_check(weekdayDisplay, nowhour)
+Checkdate = day_check(weekdayDisplay, nowhour)'''
 
 def move_old_file(datetime, moveDir, listDir):            #移动和复制
     global moveFile
@@ -128,19 +128,19 @@ def move_old_file(datetime, moveDir, listDir):            #移动和复制
         os._exit(0)
     #检测是否复制或者移动
     for dataname in datanames:
-        if os.path.splitext(dataname)[1] == '.xlsx':        #目录下包含.xlsx的文件
+        if os.path.splitext(dataname)[1] == '.xls':        #目录下包含.xls的文件
             has_txtfile = True                              #存在DOCX文件
             DocxNames.append(dataname)
             listFile = os.path.join(listDir,dataname)       #把文件夹名和文件名称链接起来
             listFiles.append(listFile)                      #将文件列表保存,便于后续移动
             NewMovePath = os.path.join(moveDir,dataname)    #如果移动,它就是目标路径
             NewMovePaths.append(NewMovePath)
-            if listFile == (listDir+str(datetime)+".xlsx"): 
+            if listFile == (listDir+str(datetime)+".xls"): 
                 has_copyfile = True                         #检测是否存在表格母本
         
     if has_txtfile == False and has_copyfile == False:      #如果没有 进行复制 
-        shutil.copy(sourceDir+"master.xlsx",targetDir)
-        os.rename(targetDir+"master.xlsx",str(datetime)+".xlsx")
+        shutil.copy(sourceDir+"master.xls",targetDir)
+        os.rename(targetDir+"master.xls",str(datetime)+".xls")
         text="作者:LSY\n未经作者授权随意转载\n开源是一种美德。"
         image_name="successful"
         interaction="复制成功"
@@ -184,7 +184,7 @@ def writemessage(datetime,writetime):
         wb.save(str(datetime)+".xls")
     
 def main():
-    Checkdate
+    '''Checkdate'''
     MoveandCopyFile                              #复制或移动表格
     writemessage(datetime,writetime)
     os._exit(0)
