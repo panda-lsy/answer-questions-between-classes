@@ -146,28 +146,35 @@ def writemessage(datetime,writetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,
     sh1.write(writetime, 2, time.strftime("%H:%M:%S", time.localtime()) )
     GuessBackTime.append(fieldValues[2])
     sh1.write(writetime, 3, fieldValues[2])
+    sh1.write(writetime, 4, "否")
+    sh1.write(writetime, 5, "————")
     wb.save(str(datetime)+".xls")
 
-def verify(Names,sh1,Psws): 
+def verify(Names,sh1,Psws,wb): 
     msg = "请输入姓名和密码"
     title = "HoMo答疑人口管理系统1.0:用户登录接口"
     user_info = []
     user_info = g.multpasswordbox(msg,title,("姓名","密码"))
+    nameexist=False
     for name in Names:
         if user_info[0] == name:
             num=Names.index(name)
-            if user_info[1] == Psws[num]:
-                sh1.write(num, 4, 'Yes')
+            nameexist=True
+            if str(user_info[1]) == str(Psws[num]):
+                sh1.write(int(num)+1, 4, '是')
+                sh1.write(int(num)+1, 5, time.strftime("%H:%M:%S", time.localtime()) )
+                wb.save(str(datetime)+".xls")
                 break
             else:
                 imagename='error'
                 text='密码错误'
-                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:密码错误",choices=("返回"))
+                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:密码错误",choices=("返回","确定"))
                 break
-    imagename='error'
-    text='不存在用户名'
-    g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:不存在用户名",choices=("返回"))
-        
+    if nameexist == False:
+        imagename='error'
+        text='不存在用户名'
+        g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:不存在用户名",choices=("返回"))
+            
 
 def main():
     '''Checkdate'''
@@ -179,6 +186,7 @@ def main():
     sh1.write(0, 2, '出去时间')
     sh1.write(0, 3, '预计返回时间')
     sh1.write(0, 4, '是否返回')
+    sh1.write(0, 5, '返回时间')
     while True:
         text='HoMo答疑人口管理系统1.0:\n如果你需要出去答疑,请点击[申请答疑]按钮申请答疑。\n如果答疑完成,请点击[答疑完成]按钮结束外出答疑。'
         imagename='logo'
@@ -186,7 +194,7 @@ def main():
         if choice == 0:
             writemessage(datetime,writetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws)
         if choice == 1:
-            verify(Names,sh1,Psws)
+            verify(Names,sh1,Psws,wb)
     os._exit(0)
 
 if __name__ == '__main__':
