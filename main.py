@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*- 
+from ast import Pass
 import os
 import shutil
 import easygui as g
@@ -6,6 +7,7 @@ import time
 import webbrowser                                       #自动打开源码网站
 import win32file
 import xlwt
+import random
 
 nowhour=time.strftime("%H", time.localtime()) 
 datetime=time.strftime("%b %d", time.localtime()) 
@@ -21,11 +23,15 @@ listDirtwo=os.path.join(listDir,"older_versions")
 imageDir=r'older_versions/images/'
 writetime=0                                             #填写次数
 
+Names=[]
+Goreasons=[]
+GuessBackTime=[]
+Gotime=[]
+Psws=[]
+
 listDir=listDir+'/'
 
-mylink="https://github.com/panda-lsy/The-homework_list-parent-replicator"
-
-waiting="true"                                          #防止直接进行复制进程
+mylink="https://github.com/panda-lsy/answer-questions-between-classes"
 
 datanamesfinally=[]
 
@@ -39,10 +45,10 @@ def is_used(file_name):                                 #检测文件占用
         return True
     return result
 
-def backup():                                           #回档
+'''def backup():                                           #回档
     global sourceDirtwo
     global datanamesfinally
-    docxcount = 0                                       #检测文件数
+    Xlscount = 0                                       #检测文件数
     success_state = ""
     text="作者:LSY\n未经作者授权随意转载\n开源是一种美德。"
     imagename = "successful"
@@ -61,8 +67,8 @@ def backup():                                           #回档
     for datanametwo in datanamestwo:
         if os.path.splitext(datanametwo)[1] == '.xls':                         #目录下包含.xls的文件
             datanamesfinally.append(datanametwo)
-            docxcount = docxcount + 1 
-    if docxcount >=2:  
+            Xlscount = Xlscount + 1 
+    if Xlscount >=2:  
         back=g.choicebox("请选择需要回档的文件", "文件回档", datanamesfinally)
         if back == None:
             os._exit(0)
@@ -80,7 +86,7 @@ def backup():                                           #回档
         success_state = "失败"
         text = "移动回档文件失败!你需要检测older_versions这个库文件夹里是否拥有两个以上旧文件."
         imagename = "error"
-        successGUI()
+        successGUI()'''
         
 '''def day_check(weekdayDisplay ,nowhour):                 #检测今天日期，防误删
 
@@ -97,98 +103,92 @@ def backup():                                           #回档
 
 Checkdate = day_check(weekdayDisplay, nowhour)'''
 
-def move_old_file(datetime, moveDir, listDir):            #移动和复制
-    global moveFile
-    
-    listFiles=[]
-    NewMovePaths=[]
-    DocxNames=[]
-    
-    movement="移动了:\n"                                    #移动的文件名
-    
-    datanames = os.listdir(listDir)
+def writemessage(datetime,writetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws):
+    msg = "请填写一下信息(其中带*号的项为必填项)"
+    title = "HoMo答疑人口管理系统1.0:答疑信息填写"
+    fieldNames = ["*姓名","*出去原因","预计何时回来"]
+    fieldValues = []
+    fieldValues = g.multenterbox(msg,title,fieldNames)
+    #print(fieldValues)
+    while True:
+        if fieldValues == None :
+            break
+        errmsg = ""
+        for i in range(len(fieldNames)):
+            option = fieldNames[i].strip()
+            if fieldValues[i].strip() == "" and option[0] == "*":
+                errmsg += ("【%s】为必填项   " %fieldNames[i])
+        if errmsg == "":
+            #g.textbox(msg='请填写你的必填项', title='HoMo答疑人口管理系统1.0:填写错误', text='', codebox=0) 
+            break
+        fieldValues = g.multenterbox(errmsg,title,fieldNames,fieldValues)
+    a='还有这些小伙伴也参加了答疑(｡･∀･)ﾉﾞ\n'
+    for goname in Names:
+        num=Names.index(goname)
+        a += str(goname) + '\t' + str(Gotime[num]) + '\n'
+    psw=random.randrange(0,1000)
+    pswmi=False
+    while True: #查重
+        for password in Psws:
+            if psw == password: #如果密码重复
+                psw=random.randrange(0,1000)
+                pswmi=True
+        if pswmi == False:
+            break                   
+    g.textbox(msg="您填写的资料如下\n姓名:"+fieldValues[0]+"\n出去原因:"+fieldValues[1]+"\n预计返回时间:"+fieldValues[2]+'\n你的验证密码是:'+str(psw)+'\n注:验证密码是答疑完成后返回验证用的', title='HoMo答疑人口管理系统1.0:录入成功',text=a , codebox=0)
+    writetime=writetime+1
+    Psws.append(psw)
+    Names.append(fieldValues[0]) 
+    sh1.write(writetime, 0, fieldValues[0])
+    Goreasons.append(fieldValues[1])
+    sh1.write(writetime, 1, fieldValues[1])
+    Gotime.append(time.strftime("%H:%M:%S", time.localtime()))
+    sh1.write(writetime, 2, time.strftime("%H:%M:%S", time.localtime()) )
+    GuessBackTime.append(fieldValues[2])
+    sh1.write(writetime, 3, fieldValues[2])
+    wb.save(str(datetime)+".xls")
 
-    has_copyfile = False
-    has_txtfile = False
-
-    def GUI():
-        choice2=g.indexbox(text,image=imageDir+image_name+".png",title="HoMo答疑人口管理系统1.0:"+interaction,choices=("好的","查看使用说明","回档之前表格"))
-        if choice2 == 0:
-                os._exit(0)
-        if choice2 == 1:
-            choice3 = g.indexbox(msg="使用说明：。。。。。。",title="HoMo答疑人口管理系统1.0:使用说明",choices=("好的","打开本项目的Github网址(你可能需要科学上网)","回档表格"))
-            if choice3 == 0:
-                os._exit(0)
-            if choice3 == 1:
-                webbrowser.open(mylink, new=0, autoraise=True)
-            if choice3 == 2:
-                backup()
-        if choice2 == 2:
-            backup()
-        os._exit(0)
-    #检测是否复制或者移动
-    for dataname in datanames:
-        if os.path.splitext(dataname)[1] == '.xls':        #目录下包含.xls的文件
-            has_txtfile = True                              #存在DOCX文件
-            DocxNames.append(dataname)
-            listFile = os.path.join(listDir,dataname)       #把文件夹名和文件名称链接起来
-            listFiles.append(listFile)                      #将文件列表保存,便于后续移动
-            NewMovePath = os.path.join(moveDir,dataname)    #如果移动,它就是目标路径
-            NewMovePaths.append(NewMovePath)
-            if listFile == (listDir+str(datetime)+".xls"): 
-                has_copyfile = True                         #检测是否存在表格母本
+def verify(Names,sh1,Psws): 
+    msg = "请输入姓名和密码"
+    title = "HoMo答疑人口管理系统1.0:用户登录接口"
+    user_info = []
+    user_info = g.multpasswordbox(msg,title,("姓名","密码"))
+    for name in Names:
+        if user_info[0] == name:
+            num=Names.index(name)
+            if user_info[1] == Psws[num]:
+                sh1.write(num, 4, 'Yes')
+                break
+            else:
+                imagename='error'
+                text='密码错误'
+                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:密码错误",choices=("返回"))
+                break
+    imagename='error'
+    text='不存在用户名'
+    g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:不存在用户名",choices=("返回"))
         
-    if has_txtfile == False and has_copyfile == False:      #如果没有 进行复制 
-        shutil.copy(sourceDir+"master.xls",targetDir)
-        os.rename(targetDir+"master.xls",str(datetime)+".xls")
-        text="作者:LSY\n未经作者授权随意转载\n开源是一种美德。"
-        image_name="successful"
-        interaction="复制成功"
-        movement="\n"
-        GUI()
 
-                
-MoveandCopyFile = move_old_file(datetime, moveDir, listDir)
-
-def writemessage(datetime,writetime):
+def main():
+    '''Checkdate'''
+    goname=''
     wb = xlwt.Workbook()
     sh1 = wb.add_sheet('外出记录')
     sh1.write(0, 0, '姓名')
     sh1.write(0, 1, '出去原因')
-    sh1.write(0, 2, '预计返回时间')
-    sh1.write(0, 3, '是否返回')
+    sh1.write(0, 2, '出去时间')
+    sh1.write(0, 3, '预计返回时间')
+    sh1.write(0, 4, '是否返回')
     while True:
-        msg = "请填写一下信息(其中带*号的项为必填项)"
-        title = "HoMo答疑人口管理系统1.0:答疑信息填写"
-        fieldNames = ["*姓名","*出去原因","预计何时回来"]
-        fieldValues = []
-        fieldValues = g.multenterbox(msg,title,fieldNames)
-        #print(fieldValues)
-        while True:
-            if fieldValues == None :
-                break
-            errmsg = ""
-            for i in range(len(fieldNames)):
-                option = fieldNames[i].strip()
-                if fieldValues[i].strip() == "" and option[0] == "*":
-                    errmsg += ("【%s】为必填项   " %fieldNames[i])
-            if errmsg == "":
-                #g.textbox(msg='请填写你的必填项', title='HoMo答疑人口管理系统1.0:填写错误', text='', codebox=0) 
-                break
-            fieldValues = g.multenterbox(errmsg,title,fieldNames,fieldValues)
-        g.textbox(msg="您填写的资料如下:%s" %str(fieldValues), title='HoMo答疑人口管理系统1.0:请再次核对', text='', codebox=0)
-        writetime=writetime+1 
-        sh1.write(writetime, 0, fieldValues[0])
-        sh1.write(writetime, 1, fieldValues[1])
-        sh1.write(writetime, 2, fieldValues[2])
-        wb.save(str(datetime)+".xls")
-    
-def main():
-    '''Checkdate'''
-    MoveandCopyFile                              #复制或移动表格
-    writemessage(datetime,writetime)
+        text='HoMo答疑人口管理系统1.0:\n如果你需要出去答疑,请点击[申请答疑]按钮申请答疑。\n如果答疑完成,请点击[答疑完成]按钮结束外出答疑。'
+        imagename='logo'
+        choice=g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:主界面",choices=("申请答疑","答疑完成",'控制台'))
+        if choice == 0:
+            writemessage(datetime,writetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws)
+        if choice == 1:
+            verify(Names,sh1,Psws)
     os._exit(0)
 
 if __name__ == '__main__':
     main()
-    os.system('pause')
+
