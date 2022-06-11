@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*- 
-from ast import Pass
 import os
 import shutil
 import easygui as g
@@ -138,6 +137,9 @@ def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws,Ifver
             option = fieldNames[i].strip()
             if fieldValues[i].strip() == "" and option[0] == "*":
                 errmsg += ("【%s】为必填项   " %fieldNames[i])
+        for name in Names:
+            if name == fieldValues[0]:
+                errmsg +=('请不要重复登记,如果需要重复登记请在名字后加上次数:2,3...')
         if errmsg == "":
             Pass = True
             break
