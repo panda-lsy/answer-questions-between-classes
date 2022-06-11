@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*- 
-from ast import Pass
 import os
 import shutil
 import easygui as g
@@ -26,7 +25,6 @@ Names=[]
 Goreasons=[]
 GuessBackTime=[]
 Gotime=[]
-Psws=[]
 Ifverifyeds=[]
 
 listDir=listDir+'/'
@@ -121,7 +119,7 @@ def day_check(weekdayDisplay ,nowhour):                 #检测今天日期，�
 
 Checkdate = day_check(weekdayDisplay, nowhour)
 
-def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws,Ifverifyeds):
+def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Ifverifyeds):
     global writetime
     Pass = False
     msg = "请填写一下信息(其中带*号的项为必填项)"
@@ -138,6 +136,9 @@ def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws,Ifver
             option = fieldNames[i].strip()
             if fieldValues[i].strip() == "" and option[0] == "*":
                 errmsg += ("【%s】为必填项   " %fieldNames[i])
+        for name in Names:
+            if name == fieldValues[0]:
+                errmsg +=('请不要重复登记,如果需要重复登记请在名字后加上次数:2,3...')
         if errmsg == "":
             Pass = True
             break
@@ -153,20 +154,10 @@ def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws,Ifver
             if Ifverifyeds[num] == True:
                 a += '\t' + "已返回"
             else:
-                a += '\n'
-        psw=random.randrange(0,1000)
-        pswmi=False
-        while True: #查重
-            for password in Psws:
-                if psw == password: #如果密码重复
-                    psw=random.randrange(0,1000)
-                    pswmi=True
-            if pswmi == False:
-                break                   
-        g.textbox(msg="您填写的资料如下\n姓名:"+fieldValues[0]+"\n出去原因:"+fieldValues[1]+"\n预计返回时间:"+fieldValues[2]+'\n你的验证密码是:'+str(psw)+'\n注:验证密码是答疑完成后返回验证用的', title='HoMo答疑人口管理系统1.0:录入成功',text=a , codebox=0)
+                a += '\n'           
+        g.textbox(msg="您填写的资料如下\n姓名:"+fieldValues[0]+"\n出去原因:"+fieldValues[1]+"\n预计返回时间:"+fieldValues[2]+'', title='HoMo答疑人口管理系统1.0:录入成功',text=a , codebox=0)
         writetime=writetime+1
         Ifverifyeds.append(False)
-        Psws.append(psw)
         Names.append(fieldValues[0]) 
         sh1.write(writetime, 0, fieldValues[0])
         Goreasons.append(fieldValues[1])
@@ -177,36 +168,28 @@ def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws,Ifver
         sh1.write(writetime, 3, fieldValues[2])
         wb.save(str(datetime)+".xls")
 
-def verify(Names,sh1,Psws,wb): 
-    msg = "请输入姓名和密码"
-    title = "HoMo答疑人口管理系统1.0:用户登录接口"
+def verify(Names,sh1,wb): 
     user_info = []
-    user_info = g.multpasswordbox(msg,title,("姓名","密码"))
+    user_info = g.enterbox(msg='答疑完毕在此签到,请输入你的名字',  title = "HoMo答疑人口管理系统1.0:用户登录接口" , default='', strip=False, image=None, root=None)
     nameexist=False
     for name in Names:
-        if user_info[0] == name:
+        if user_info == name:
             num=Names.index(name)
             nameexist=True
-            if str(user_info[1]) == str(Psws[num]) or str(user_info[1]) == 'yourultrapassword':
-                if Ifverifyeds[num] == False:
-                    sh1.write(int(num)+1, 4, '是')
-                    sh1.write(int(num)+1, 5, time.strftime("%H:%M:%S", time.localtime()))
-                    wb.save(str(datetime)+".xls")
-                    imagename='successful'
-                    text='验证成功,祝你学习进步'
-                    Ifverifyeds[num] = True
-                    g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:验证成功",choices=("返回",'好的'))
-                    break
-                else:
-                    imagename='error'
-                    text='你已验证过了，不要重复验证'
-                    g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:验证过了",choices=("返回","确定"))
-                    break    
+            if Ifverifyeds[num] == False:
+                sh1.write(int(num)+1, 4, '是')
+                sh1.write(int(num)+1, 5, time.strftime("%H:%M:%S", time.localtime()))
+                wb.save(str(datetime)+".xls")
+                imagename='successful'
+                text='验证成功,祝你学习进步'
+                Ifverifyeds[num] = True
+                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:验证成功",choices=("返回",'好的'))
+                break
             else:
                 imagename='error'
-                text='密码错误'
-                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:密码错误",choices=("返回","确定"))
-                break
+                text='你已验证过了，不要重复验证'
+                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:验证过了",choices=("返回","确定"))
+                break    
     if nameexist == False:
         imagename='error'
         text='不存在用户名'
@@ -286,9 +269,9 @@ def main():
         imagename='logo'
         choice=g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人口管理系统1.0:主界面",choices=("申请答疑","答疑完成",'控制台'))
         if choice == 0:
-            writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Psws,Ifverifyeds)
+            writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Ifverifyeds)
         if choice == 1:
-            verify(Names,sh1,Psws,wb)
+            verify(Names,sh1,wb)
         if choice == 2:
             console()
 
