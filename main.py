@@ -197,14 +197,14 @@ def verify(Names,sh1,wb):
             
 def console():                                           #控制台
     command='''
-    HoMo答疑人口管理系统 version 1.0.0(2022-06-11) -- "Bug in Your Hair"
+    HoMo答疑人员管理系统 version 1.0.0(2022-06-11) -- "Bug in Your Hair"
 copyright (C) 2022 The Panda-Lsy Foundation for statistical ComputingPlatform:'''+sys.platform+'''
-HoMo答疑人口管理系统是自由软件,不带任何担保。
+HoMo答疑人员管理系统是自由软件,不带任何担保。
 在某些条件下你可以将其自由散布。
-HoMo答疑人口管理系统是个合作计划,有许多人为之做出了贡献.
+HoMo答疑人员管理系统是个合作计划,有许多人为之做出了贡献.
 用"contributors()"来看合作者的详细情况
 用"help()"来阅读在线帮助文件，或用"nelp.start()"通过HTML浏览器来看帮助文件。
-用"quit()"退出HoMo答疑人口管理系统
+用"quit()"退出HoMo答疑人员管理系统
 '''
     while True:
         input=g.enterbox(msg=command, title='HoMo答疑人员管理系统1.0:控制台界面', default='', strip=False, image=None, root=None)
@@ -218,7 +218,7 @@ HoMo答疑人口管理系统是个合作计划,有许多人为之做出了贡献
             command += input+'''
             用"contributors()"来看合作者的详细情况
             用"help()"来阅读在线帮助文件，或用"nelp.start()"通过HTML浏览器来看帮助文件。
-            用"quit()"退出HoMo答疑人口管理系统
+            用"quit()"退出HoMo答疑人员管理系统
             用"clear()"清除记录
             用"export()"导出答疑文件
             用"backup()"导出先前的答疑文件
