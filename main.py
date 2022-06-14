@@ -33,7 +33,6 @@ datanamesfinally=[]
 def now_hour():
    timea=time.strftime("%H", time.localtime()) 
    return timea
-nowhour=now_hour()
 
 def is_used(file_name):                                 #检测文件占用
     try:
@@ -50,7 +49,7 @@ def move_old_file(datetime, moveDir, listDir):            #移动旧文件
     datanames = os.listdir(listDir)
 
     def GUI():
-        g.indexbox(text,image=imageDir+image_name+".png",title="HoMo答疑人员管理系统1.2:"+interaction,choices=("取消","好的"))
+        g.indexbox(text,image=imageDir+image_name+".png",title="HoMo答疑人员管理系统1.3:"+interaction,choices=("取消","好的"))
     #检测是否复制或者移动
     for dataname in datanames:
         
@@ -75,7 +74,7 @@ def backup(listDirtwo):                                           #回档
     text="作者:LSY\n未经作者授权随意转载\n开源是一种美德。"
     imagename = "successful"
     def successGUI():                                   #回档成功或失败界面
-        g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:回档"+success_state,choices=("好的","确定"))
+        g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:回档"+success_state,choices=("好的","确定"))
     datanamestwo = os.listdir(listDirtwo)
     for datanametwo in datanamestwo:
         if os.path.splitext(datanametwo)[1] == '.xls':                         #目录下包含.xls的文件
@@ -106,19 +105,19 @@ def backup(listDirtwo):                                           #回档
         imagename = "error"
         successGUI()
         
-def day_check(weekdayDisplay ,nowhour):                 #检测今天日期，防误删
+def day_check(weekdayDisplay):                 #检测今天日期，防误删
 
-    if not nowhour=="16":
-            g.indexbox("今天是"+weekdayDisplay+",现在还不到使用时间(16:00-17:00)",title="HoMo答疑人员管理系统1.2:防误触",choices=("好的,退出","不好,退出"))
+    if not now_hour()=="16":
+            g.indexbox("今天是"+weekdayDisplay+",现在还不到使用时间(16:00-17:00)",title="HoMo答疑人员管理系统1.3:防误触",choices=("好的,退出","不好,退出"))
             return False
 
 def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Ifverifyeds):
     global writetime
-    if day_check(weekdayDisplay, nowhour) == False:
+    if day_check(weekdayDisplay) == False:
         return
     Pass = False
     msg = "请填写一下信息(其中带*号的项为必填项)"
-    title = "HoMo答疑人员管理系统1.2:答疑信息填写"
+    title = "HoMo答疑人员管理系统1.3:答疑信息填写"
     fieldNames = ["*姓名","*出去原因","预计何时回来"]
     fieldValues = []
     fieldValues = g.multenterbox(msg,title,fieldNames)
@@ -150,7 +149,7 @@ def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Ifverifyed
                 a += '\t' + "已返回\n"
             else:
                 a += '\n'           
-        g.textbox(msg="您填写的资料如下\n姓名:"+fieldValues[0]+"\n出去原因:"+fieldValues[1]+"\n预计返回时间:"+fieldValues[2]+'', title='HoMo答疑人员管理系统1.2:录入成功',text=a , codebox=0)
+        g.textbox(msg="您填写的资料如下\n姓名:"+fieldValues[0]+"\n出去原因:"+fieldValues[1]+"\n预计返回时间:"+fieldValues[2]+'', title='HoMo答疑人员管理系统1.3:录入成功',text=a , codebox=0)
         writetime=writetime+1
         Ifverifyeds.append(False)
         Names.append(fieldValues[0]) 
@@ -164,10 +163,10 @@ def writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Ifverifyed
         wb.save(str(datetime)+".xls")
 
 def verify(Names,sh1,wb):
-    if day_check(weekdayDisplay, nowhour) == False:
+    if day_check(weekdayDisplay) == False:
         return
     user_info = []
-    user_info = g.enterbox(msg='答疑完毕在此签到,请输入你的名字',  title = "HoMo答疑人员管理系统1.2:用户登录接口" , default='', strip=False, image=None, root=None)
+    user_info = g.enterbox(msg='答疑完毕在此签到,请输入你的名字',  title = "HoMo答疑人员管理系统1.3:用户登录接口" , default='', strip=False, image=None, root=None)
     nameexist=False
     for name in Names:
         if user_info == name:
@@ -180,30 +179,30 @@ def verify(Names,sh1,wb):
                 imagename='successful'
                 text='验证成功,祝你学习进步'
                 Ifverifyeds[num] = True
-                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:验证成功",choices=("返回",'好的'))
+                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:验证成功",choices=("返回",'好的'))
                 break
             else:
                 imagename='error'
                 text='你已验证过了，不要重复验证'
-                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:验证过了",choices=("返回","确定"))
+                g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:验证过了",choices=("返回","确定"))
                 break    
     if nameexist == False:
         imagename='error'
         text='不存在用户名'
-        g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:不存在用户名",choices=("返回",'好的'))
+        g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:不存在用户名",choices=("返回",'好的'))
             
-def console():                                           #控制台
+def console(wb):                                           #控制台
     def verify_password():
-        password=g.passwordbox(msg='涉及敏感操作,请输入管理员密码', title='HoMo答疑人员管理系统1.2:敏感操作', default='', image=None, root=None)
+        password=g.passwordbox(msg='涉及敏感操作,请输入管理员密码', title='HoMo答疑人员管理系统1.3:敏感操作', default='', image=None, root=None)
         if password == None:
             return False
         if not password == 'yourultrapassword':
             imagename='error'
             text='密码错误'
-            g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:密码错误",choices=("返回",'好的'))
+            g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:密码错误",choices=("返回",'好的'))
             return False
     command='''
-    HoMo答疑人员管理系统 version 1.2(2022-06-11) -- "Bug in Your Hair"
+    HoMo答疑人员管理系统 version 1.3(2022-06-11) -- "Bug in Your Hair"
 copyright (C) 2022 The Panda-Lsy Foundation for statistical ComputingPlatform:'''+sys.platform+'''
 HoMo答疑人员管理系统是自由软件,不带任何担保。
 在某些条件下你可以将其自由散布。
@@ -213,7 +212,7 @@ HoMo答疑人员管理系统是个合作计划,有许多人为之做出了贡献
 用"quit()"退出HoMo答疑人员管理系统
 '''
     while True:
-        input=g.enterbox(msg=command, title='HoMo答疑人员管理系统1.2:控制台界面', default='', strip=False, image=None, root=None)
+        input=g.enterbox(msg=command, title='HoMo答疑人员管理系统1.3:控制台界面', default='', strip=False, image=None, root=None)
 
         if input == 'contributors()':
             command += input+'''
@@ -241,6 +240,7 @@ HoMo答疑人员管理系统是个合作计划,有许多人为之做出了贡献
         if input == 'export()':
             if not verify_password() == False:
                 while True:
+                    wb.save(str(datetime)+".xls")
                     CopyMovePath=g.filesavebox(msg='请选择保存文件的路径', title='导出表格', default=str(datetime)+".xls", filetypes=['*.xls'])
                     if not CopyMovePath == None:
                         break
@@ -265,7 +265,7 @@ def main():
     if os.path.exists('start')== True:
         text='警告:请不要重复运行软件\n'
         imagename='error'
-        choice=g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:请不要重复运行软件",choices=("好的退出",'退出'))
+        choice=g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:请不要重复运行软件",choices=("好的退出",'退出'))
         os._exit(0)
     os.mkdir('start')
     move_old_file(datetime, moveDir, listDir)
@@ -278,16 +278,24 @@ def main():
     sh1.write(0, 4, '是否返回')
     sh1.write(0, 5, '返回时间')
     while True:
-        text='HoMo答疑人员管理系统1.2:\n如果你需要出去答疑,请点击[申请答疑]按钮申请答疑。\n如果答疑完成,请点击[答疑完成]按钮结束外出答疑。\n'
+        text='HoMo答疑人员管理系统1.3:\n如果你需要出去答疑,请点击[申请答疑]按钮申请答疑。\n如果答疑完成,请点击[答疑完成]按钮结束外出答疑。\n'
         imagename='logo'
-        choice=g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.2:主界面",choices=("申请答疑","答疑完成",'控制台'))
+        choice=g.indexbox(text,image=imageDir+imagename+".png",title="HoMo答疑人员管理系统1.3:主界面",choices=("申请答疑","答疑完成",'控制台'))
         if choice == 0:
             writemessage(datetime,Names,Goreasons,GuessBackTime,Gotime,wb,sh1,Ifverifyeds)
         if choice == 1:
             verify(Names,sh1,wb)
         if choice == 2:
-            console()
-
+            console(wb)
+        if choice == None:
+            if now_hour()=="16":
+                g.indexbox("别人还需要使用这个软件,不要关掉它。",title="HoMo答疑人员管理系统1.3:防误触",choices=("好的,返回","不好,返回"))
+            else:
+                choice3=g.indexbox("你确定要关闭吗?",title="HoMo答疑人员管理系统1.3:防误触",choices=("是的","不是"))
+                if choice3 == 0:
+                    os.removedirs (listDir+'/start')
+                    os._exit(0)
+                    
 
 if __name__ == '__main__':
     main()
